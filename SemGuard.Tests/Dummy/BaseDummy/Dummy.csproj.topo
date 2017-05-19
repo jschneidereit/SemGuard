@@ -1,0 +1,119 @@
+{
+  "Version": {
+    "Major": 1,
+    "Minor": 0,
+    "Build": 0,
+    "Revision": 0,
+    "MajorRevision": 0,
+    "MinorRevision": 0
+  },
+  "AssemblyName": "Dummy",
+  "AssemblyPath": "C:\\Repos\\SemVerRecorder\\SemVerRecorder.Tests\\Dummy\\BaseDummy\\Dummy.csproj",
+  "AssemblyReferences": [
+    {
+      "Item1": "Microsoft.CSharp",
+      "Item2": {
+        "Major": 4,
+        "Minor": 0,
+        "Build": 0,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      }
+    },
+    {
+      "Item1": "mscorlib",
+      "Item2": {
+        "Major": 4,
+        "Minor": 0,
+        "Build": 0,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      }
+    },
+    {
+      "Item1": "System.Core",
+      "Item2": {
+        "Major": 4,
+        "Minor": 0,
+        "Build": 0,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      }
+    },
+    {
+      "Item1": "System.Data.DataSetExtensions",
+      "Item2": {
+        "Major": 4,
+        "Minor": 0,
+        "Build": 0,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      }
+    },
+    {
+      "Item1": "System.Data",
+      "Item2": {
+        "Major": 4,
+        "Minor": 0,
+        "Build": 0,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      }
+    },
+    {
+      "Item1": "System",
+      "Item2": {
+        "Major": 4,
+        "Minor": 0,
+        "Build": 0,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      }
+    },
+    {
+      "Item1": "System.Net.Http",
+      "Item2": {
+        "Major": 4,
+        "Minor": 0,
+        "Build": 0,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      }
+    },
+    {
+      "Item1": "System.Xml",
+      "Item2": {
+        "Major": 4,
+        "Minor": 0,
+        "Build": 0,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      }
+    },
+    {
+      "Item1": "System.Xml.Linq",
+      "Item2": {
+        "Major": 4,
+        "Minor": 0,
+        "Build": 0,
+        "Revision": 0,
+        "MajorRevision": 0,
+        "MinorRevision": 0
+      }
+    }
+  ],
+  "PublicApi": [
+    "Dummy.SemVerTest.Name()",
+    "Dummy.SemVerTest.Hello()",
+    "Dummy.SemVerTest.Parameters(int, int)",
+    "Dummy.SemVerTest.SemVerTest()"
+  ]
+}
