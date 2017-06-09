@@ -181,4 +181,7 @@
   <data name="PatchDummySln" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\dummy\patchdummy\dummy.sln;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="SemGuard_Lib" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\NuSpec\SemGuard.Lib.nuspec;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

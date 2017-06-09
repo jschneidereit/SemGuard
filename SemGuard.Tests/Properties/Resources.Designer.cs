@@ -441,5 +441,15 @@ namespace SemGuard.Tests.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] SemGuard_Lib {
+            get {
+                object obj = ResourceManager.GetObject("SemGuard_Lib", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
