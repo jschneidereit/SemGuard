@@ -6,6 +6,9 @@ module Bumper =
     open System
     open SemVer
     open System.Xml.Linq
+    open System.Xml
+    open System.Xml.Serialization
+    open System.Collections.Generic
 
     type Nuget = XmlProvider<"""<?xml version="1.0"?>
 <package >
@@ -74,17 +77,47 @@ module Bumper =
         | Sys v -> BumpSysVer v o
         | _   -> v
 
-    let BumpNuspecContents (contents : string) (o : string) = 
-        match (tryParseNuget contents, tryParseChoco contents) with
-        | ((true, _), _) -> 
-            let xml = Nuget.Parse(contents)
-            xml.Metadata.Version.XElement.Value <- (Bump xml.Metadata.Version.XElement.Value o).ToString()
-            xml.ToString()
-        | (_, (true, _)) -> 
-            let xml = Choco.Parse(contents)
-            xml.Metadata.Version.XElement.Value <- (Bump xml.Metadata.Version.XElement.Value o).ToString()
-            xml.ToString()
-        | ((_, n), (_, c)) -> sprintf "Error. Could not parse the nuspec contents. \nNuget error: %s. \nChoco error: %s" n c
+    [<CLIMutable>][<XmlType("metadata")>]
+    type Metadata = 
+        {
+            [<XmlElement("version")>]
+            version : string
+        }
+
+    [<CLIMutable>][<XmlType("package")>]
+    type Package = 
+        {
+            [<XmlElement("metadata")>]
+            metadata : Metadata
+        }
+
+    let BumpNuspecContents (contents : string) (op : string) = 
+        //https://luketopia.net/2015/02/07/making-xlinq-usable-from-fsharp/
+        let doc = XDocument.Parse(contents)
+
+        let a = doc.Document
+
+        let b = a.Element(XName.Get "package")
+        let c = a.Element(XName.Get "metadata")
+        
+        let version = doc.Document.Element(XName.Get "package").Element(XName.Get "metadata")
+        
+        version.Value <- (Bump version.Value op).ToString()
+        doc.ToString()
+
+
+    
+    //let BumpNuspecContents (contents : string) (o : string) = 
+    //    match (tryParseNuget contents, tryParseChoco contents) with
+    //    | ((true, _), _) -> 
+    //        let xml = Nuget.Parse(contents)
+    //        xml.Metadata.Version.XElement.Value <- (Bump xml.Metadata.Version.XElement.Value o).ToString()
+    //        xml.ToString()
+    //    | (_, (true, _)) -> 
+    //        let xml = Choco.Parse(contents)
+    //        xml.Metadata.Version.XElement.Value <- (Bump xml.Metadata.Version.XElement.Value o).ToString()
+    //        xml.ToString()
+    //    | ((_, n), (_, c)) -> sprintf "Error. Could not parse the nuspec contents. \nNuget error: %s. \nChoco error: %s" n c
         
     let BumpNuspecFile (fi : FileInfo) (o : string) =
         (fi.FullName |> File.ReadAllText |> BumpNuspecContents o) |> fun x -> File.WriteAllText(fi.FullName, x)

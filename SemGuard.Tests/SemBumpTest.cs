@@ -1,6 +1,7 @@
 ﻿using System;
 using b = SemBump.Bumper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Xml.Linq;
 
 namespace SemGuard.Tests
 {
@@ -28,6 +29,11 @@ namespace SemGuard.Tests
         </files >
       </package >
       ";
+
+           
+
+            var blah = XDocument.Parse(choco);
+            var a = blah.Root.Element(XName.Get("package"));
 
             var result = b.BumpNuspecContents(choco, "major");
 
