@@ -9,7 +9,7 @@ module Bumper =
     open System.Xml
     open System.Xml.Serialization
     open System.Collections.Generic
-
+    
     type Nuget = XmlProvider<"""<?xml version="1.0"?>
 <package >
   <metadata>
@@ -77,32 +77,14 @@ module Bumper =
         | Sys v -> BumpSysVer v o
         | _   -> v
 
-    [<CLIMutable>][<XmlType("metadata")>]
-    type Metadata = 
-        {
-            [<XmlElement("version")>]
-            version : string
-        }
-
-    [<CLIMutable>][<XmlType("package")>]
-    type Package = 
-        {
-            [<XmlElement("metadata")>]
-            metadata : Metadata
-        }
-
     let BumpNuspecContents (contents : string) (op : string) = 
-        //https://luketopia.net/2015/02/07/making-xlinq-usable-from-fsharp/
         let doc = XDocument.Parse(contents)
-
-        let a = doc.Document
-
-        let b = a.Element(XName.Get "package")
-        let c = a.Element(XName.Get "metadata")
         
-        let version = doc.Document.Element(XName.Get "package").Element(XName.Get "metadata")
+        doc.Descendants().Attributes() |> Seq.filter (fun a -> a.IsNamespaceDeclaration) |> Seq.map (fun a -> a.Remove()) |> ignore
+        let version = doc.Descendants() |> Seq.filter (fun d -> d.Name.LocalName.ToLower() = "version") |> Seq.head
+
+        (Bump version.Value op).ToString() |> version.SetValue
         
-        version.Value <- (Bump version.Value op).ToString()
         doc.ToString()
 
 
