@@ -8,13 +8,38 @@ namespace SemGuard.Tests
     public class SemBumpTest
     {
         [TestMethod]
+        public void BumpChocoTest()
+        {
+            var choco = @"<?xml version=""1.0"" encoding=""utf - 8""?>
+<!--Do not remove this test for UTF - 8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF - 8, not this one. -->
+      <package xmlns = ""http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd"" >
+         <metadata >
+           <id > choconuspec </id >
+           <version > 1.3.3.7 </version >
+              <title > choconuspec(Install) </title >
+              <authors > __REPLACE_AUTHORS_OF_SOFTWARE_COMMA_SEPARATED__ </authors >
+              <projectUrl > https://_Software_Location_REMOVE_OR_FILL_OUT_</projectUrl>
+    <tags > choconuspec admin SPACE_SEPARATED</tags >
+       <summary > __REPLACE__ </summary >
+       <description > __REPLACE__MarkDown_Okay </description >
+     </metadata >
+     <files >
+       <file src = ""tools\**"" target = ""tools"" />
+        </files >
+      </package >
+      ";
+
+            var result = b.BumpNuspecContents(choco, "major");
+
+        }
+
+        [TestMethod]
         public void DetermineVersionTypeTest()
         {
             var test_version = "1.0.0-rc1";
 
             try
-            {
-                
+            {   
                 var semv = new SemVer.SemanticVersion(test_version);
             }
             catch (Exception)
@@ -22,7 +47,6 @@ namespace SemGuard.Tests
                 try
                 {
                     var sysv = new System.Version(test_version);
-
                 }
                 catch (Exception)
                 {
@@ -34,9 +58,8 @@ namespace SemGuard.Tests
         [TestMethod]
         public void BumpNuspecContentsTest()
         {
-            var thing = System.Text.Encoding.Default.GetString(Properties.Resources.SemGuard_Lib);
+            var thing = System.Text.Encoding.Default.GetString(Properties.Resources.nuget);
             var actual = b.BumpNuspecContents(thing, "major");
-
         }
 
         [TestMethod]

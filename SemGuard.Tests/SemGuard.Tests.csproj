@@ -224,7 +224,12 @@
     <None Include="app.config" />
     <EmbeddedResource Include="Dummy\BaseDummy\Dummy.csproj.topo" />
     <EmbeddedResource Include="Dummy\DummyTwo\App.config" />
-    <EmbeddedResource Include="NuSpec\SemGuard.Lib.nuspec" />
+    <None Include="NuSpec\choco.nuspec">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="NuSpec\nuget.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

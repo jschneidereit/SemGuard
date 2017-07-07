@@ -13,10 +13,10 @@ namespace SemGuard.Tests
     public class TransformerTests
     {
         //TODO: point these to the embedded resources
-        private IEnumerable<(Topology, Compilation, Project)> Base { get; } = Transformer.LoadSolution(@"..\Dummy\BaseDummy\Dummy.sln").ToList();
-        private (Topology, Compilation, Project) Major { get; } = Transformer.LoadSolution(@"..\Dummy\MajorDummy\Dummy.sln").First();
-        private (Topology, Compilation, Project) Minor { get; } = Transformer.LoadSolution(@"..\Dummy\MinorDummy\Dummy.sln").First();
-        private (Topology, Compilation, Project) Patch { get; } = Transformer.LoadSolution(@"..\Dummy\PatchDummy\Dummy.sln").First();
+        private IEnumerable<(Topology, Compilation, Project)> Base { get; } = Transformer.LoadSolution(@"..\..\Dummy\BaseDummy\Dummy.sln").ToList();
+        private (Topology, Compilation, Project) Major { get; } = Transformer.LoadSolution(@"..\..\Dummy\MajorDummy\Dummy.sln").First();
+        private (Topology, Compilation, Project) Minor { get; } = Transformer.LoadSolution(@"..\..\Dummy\MinorDummy\Dummy.sln").First();
+        private (Topology, Compilation, Project) Patch { get; } = Transformer.LoadSolution(@"..\..\Dummy\PatchDummy\Dummy.sln").First();
 
         private static bool SetEquals<T>(List<T> left, List<T> right) where T : IComparable
         {
@@ -66,7 +66,7 @@ namespace SemGuard.Tests
         [TestMethod()]
         public void GetAssemblyFilePathTest()
         {
-            var expected = @"C:\Repos\SemVerRecorder\SemVerRecorder.Tests\Dummy\BaseDummy\Dummy.csproj";
+            var expected = @"C:\Repos\SemGuard\SemGuard.Tests\Dummy\BaseDummy\Dummy.csproj";
             var actual = Base.First().Item3.GetAssemblyFilePath();
             Assert.AreEqual(expected, actual);
         }
@@ -74,7 +74,7 @@ namespace SemGuard.Tests
         [TestMethod()]
         public void GetTopoFilePathTest()
         {
-            var expected = @"C:\Repos\SemVerRecorder\SemVerRecorder.Tests\Dummy\BaseDummy\Dummy.csproj.topo";
+            var expected = @"C:\Repos\SemGuard\SemGuard.Tests\Dummy\BaseDummy\Dummy.csproj.topo";
             var actual = Base.First().Item1.GetTopoFilePath();
             Assert.AreEqual(expected, actual);
         }
@@ -82,20 +82,20 @@ namespace SemGuard.Tests
         [TestMethod()]
         public void TopoFileExistsTest()
         {
-            if (!File.Exists(@"C:\Repos\SemVerRecorder\SemVerRecorder.Tests\Dummy\BaseDummy\Dummy.csproj.topo"))
+            if (!File.Exists(@"C:\Repos\SemGuard\SemGuard.Tests\Dummy\BaseDummy\Dummy.csproj.topo"))
             {
                 Base.First().Item1.SaveToFile();
             }
 
             Assert.IsTrue(Transformer.TopoFileExists(Base.First().Item1.GetTopoFilePath()));
-            Assert.IsFalse(Transformer.TopoFileExists(@"C:\Repos\SemVerRecorder\SemVerRecorder.Tests\Dummy\BaseDummy\Dummy.csproj"));
+            Assert.IsFalse(Transformer.TopoFileExists(@"C:\Repos\SemGuard\SemGuard.Tests\Dummy\BaseDummy\Dummy.csproj"));
         }
 
         [TestMethod()]
         [TestCategory("Integration")]
         public void BuildTopologyAndLoadFromFileTest()
         {
-            var path = @"C:\Repos\SemVerRecorder\SemVerRecorder.Tests\Dummy\BaseDummy\Dummy.csproj.topo";
+            var path = @"C:\Repos\SemGuard\SemGuard.Tests\Dummy\BaseDummy\Dummy.csproj.topo";
             if (!File.Exists(path))
             {
                 Base.First().Item1.SaveToFile();
@@ -130,7 +130,7 @@ namespace SemGuard.Tests
         [TestCategory("Integration")]
         public void SaveToFileTest()
         {
-            var path = @"C:\Repos\SemVerRecorder\SemVerRecorder.Tests\Dummy\BaseDummy\Dummy.csproj.topo";
+            var path = @"C:\Repos\SemGuard\SemGuard.Tests\Dummy\BaseDummy\Dummy.csproj.topo";
             if (File.Exists(path))
             {
                 File.Delete(path);

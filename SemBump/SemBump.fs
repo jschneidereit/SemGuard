@@ -7,15 +7,33 @@ module Bumper =
     open SemVer
     open System.Xml.Linq
 
-    type Nuspec = XmlProvider<"""<?xml version="1.0" encoding="utf-8"?>
-<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    type Nuget = XmlProvider<"""<?xml version="1.0"?>
+<package >
+  <metadata>
+        <id></id>
+        <version></version>
+    </metadata>
+</package>""">
+
+    type Choco = XmlProvider<"""<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
     <metadata>
         <id></id>
         <version></version>
-        <description></description>
-        <authors></authors>
     </metadata>
 </package>""">
+
+    let tryParseNuget (contents : string) =
+        try
+            let _ = Nuget.Parse contents
+            (true, "success")
+        with e -> (false, e.ToString())
+
+    let tryParseChoco (contents : string) = 
+        try 
+            let _ = Choco.Parse contents
+            (true, "success")
+        with e -> (false, e.ToString())
 
     type VersionType = 
         | Sem of SemanticVersion
@@ -56,11 +74,17 @@ module Bumper =
         | Sys v -> BumpSysVer v o
         | _   -> v
 
-    let BumpNuspecContents (contents : string) (o : string) =
-        let xml = Nuspec.Parse(contents)
-        let bumped = (Bump xml.Metadata.Version.XElement.Value o).ToString()
-        xml.Metadata.Version.XElement.Value <- bumped
-        xml.ToString()
-
+    let BumpNuspecContents (contents : string) (o : string) = 
+        match (tryParseNuget contents, tryParseChoco contents) with
+        | ((true, _), _) -> 
+            let xml = Nuget.Parse(contents)
+            xml.Metadata.Version.XElement.Value <- (Bump xml.Metadata.Version.XElement.Value o).ToString()
+            xml.ToString()
+        | (_, (true, _)) -> 
+            let xml = Choco.Parse(contents)
+            xml.Metadata.Version.XElement.Value <- (Bump xml.Metadata.Version.XElement.Value o).ToString()
+            xml.ToString()
+        | ((_, n), (_, c)) -> sprintf "Error. Could not parse the nuspec contents. \nNuget error: %s. \nChoco error: %s" n c
+        
     let BumpNuspecFile (fi : FileInfo) (o : string) =
         (fi.FullName |> File.ReadAllText |> BumpNuspecContents o) |> fun x -> File.WriteAllText(fi.FullName, x)
