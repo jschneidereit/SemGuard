@@ -8,7 +8,7 @@
     "MinorRevision": 0
   },
   "AssemblyName": "Dummy",
-  "AssemblyPath": "C:\\Repos\\SemVerRecorder\\SemVerRecorder.Tests\\Dummy\\BaseDummy\\Dummy.csproj",
+  "AssemblyPath": "C:\\Repos\\SemGuard\\SemGuard.Tests\\Dummy\\BaseDummy\\Dummy.csproj",
   "AssemblyReferences": [
     {
       "Item1": "Microsoft.CSharp",

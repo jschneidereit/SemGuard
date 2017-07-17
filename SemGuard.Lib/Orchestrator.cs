@@ -9,12 +9,12 @@ namespace SemGuard.Lib
 {
     public class Orchestrator
     {
-        private readonly (Topology, Compilation, Project) _target;
-
-        public Orchestrator(string solution, string assembly)
+        private readonly List<(Topology, Compilation, Project)> _targets;
+        
+        public Orchestrator(string solution, List<string> assemblies)
         {
             var data = Transformer.LoadSolution(solution: solution);
-            _target = data.First(t => t.Item3.AssemblyName == assembly);
+            var targets = data.Where(t => assemblies.Contains(t.Item3.AssemblyName));
         }
     }
 }

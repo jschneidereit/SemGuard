@@ -133,6 +133,9 @@
   <data name="BaseDummySln" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\dummy\basedummy\dummy.sln;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="choco" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\NuSpec\choco.nuspec;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="DummyTwoAppConfig" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\dummy\dummytwo\app.config;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
@@ -168,6 +171,9 @@
   </data>
   <data name="MinorDummySln" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\dummy\minordummy\dummy.sln;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="nuget" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\NuSpec\nuget.nuspec;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="PatchDummyAssemblyInfo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\dummy\patchdummy\properties\assemblyinfo.cs;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
