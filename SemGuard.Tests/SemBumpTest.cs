@@ -77,6 +77,14 @@ namespace SemGuard.Tests
         }
 
         [TestMethod]
+        public void TestWildCards()
+        {
+            var test_version = "1.0.*";
+
+            var semv = new SemVer.SemanticVersion(test_version);
+        }
+
+        [TestMethod]
         public void BumpNuspecContentsTest()
         {
             var thing = System.Text.Encoding.Default.GetString(Properties.Resources.nuget);
