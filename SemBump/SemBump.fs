@@ -6,10 +6,17 @@ module Bumper =
     open System
     open SemVer
     open System.Xml.Linq
-    open System.Xml
-    open System.Xml.Serialization
-    open System.Collections.Generic
+        
+    type UnionOperation = Major | Minor | Patch | Build
     
+    let parseOperation (operation : string) : UnionOperation option =
+        match operation.ToLower() with
+        | "major" -> Some Major
+        | "minor" -> Some Minor
+        | "patch" -> Some Patch
+        | "build" -> Some Build
+        | _       -> None
+
     type Nuget = XmlProvider<"""<?xml version="1.0"?>
 <package >
   <metadata>
@@ -53,42 +60,40 @@ module Bumper =
         | (_,     true) -> Sem (SemanticVersion v)
         | _ -> Error "Couldn't parse version and therefore can't bump it!"
         
-    let BumpSemVer (v : SemanticVersion) (o : string) =
-        match o.ToLower() with
-        | "major" -> (v.Major + 1u, 0u, 0u)
-        | "minor" -> (v.Major, v.Minor + 1u, 0u)
-        | "patch" -> (v.Major, v.Minor, v.Patch + 1u)
+    let BumpSemVer (v : SemanticVersion) (o : UnionOperation) =
+        match o with
+        | Major -> (v.Major + 1u, 0u, 0u)
+        | Minor -> (v.Major, v.Minor + 1u, 0u)
+        | Patch -> (v.Major, v.Minor, v.Patch + 1u)
         | _       -> (v.Major, v.Minor, v.Patch)
         |> fun (x, y, z) -> sprintf "%i.%i.%i" x y z
 
     //Support bumping non-semver for my own selfish reasons
-    let BumpSysVer (v : Version) (o : string) =
-        match o.ToLower() with
-        | "major" -> (v.Major + 1, 0, 0, 0)
-        | "minor" -> (v.Major, v.Minor + 1, 0, 0)
-        | "patch" -> (v.Major, v.Minor, v.Build, 0)
-        | "build" -> (v.Major, v.Minor, v.Build, v.Revision + 1)
+    let BumpSysVer (v : Version) (o : UnionOperation) =
+        match o with
+        | Major -> (v.Major + 1, 0, 0, 0)
+        | Minor -> (v.Major, v.Minor + 1, 0, 0)
+        | Patch -> (v.Major, v.Minor, v.Build, 0)
+        | Build -> (v.Major, v.Minor, v.Build, v.Revision + 1)
         | _       -> (v.Major, v.Minor, v.Build, v.Revision)
         |> fun (x, y, z, w) -> sprintf "%i.%i.%i.%i" x y z w
 
-    let Bump (v : string) (o : string) =
+    let Bump (v : string) (o : UnionOperation) =
         match GetVersionType v with
         | Sem v -> BumpSemVer v o
         | Sys v -> BumpSysVer v o
         | _   -> v
 
-    let BumpNuspecContents (contents : string) (op : string) = 
+    let BumpNuspecContents (contents : string) (o : UnionOperation) = 
         let doc = XDocument.Parse(contents)
         
         doc.Descendants().Attributes() |> Seq.filter (fun a -> a.IsNamespaceDeclaration) |> Seq.map (fun a -> a.Remove()) |> ignore
         let version = doc.Descendants() |> Seq.filter (fun d -> d.Name.LocalName.ToLower() = "version") |> Seq.head
 
-        (Bump version.Value op).ToString() |> version.SetValue
+        (Bump version.Value o).ToString() |> version.SetValue
         
         doc.ToString()
-
-
-    
+            
     //let BumpNuspecContents (contents : string) (o : string) = 
     //    match (tryParseNuget contents, tryParseChoco contents) with
     //    | ((true, _), _) -> 
@@ -100,6 +105,9 @@ module Bumper =
     //        xml.Metadata.Version.XElement.Value <- (Bump xml.Metadata.Version.XElement.Value o).ToString()
     //        xml.ToString()
     //    | ((_, n), (_, c)) -> sprintf "Error. Could not parse the nuspec contents. \nNuget error: %s. \nChoco error: %s" n c
-        
-    let BumpNuspecFile (fi : FileInfo) (o : string) =
-        (fi.FullName |> File.ReadAllText |> BumpNuspecContents o) |> fun x -> File.WriteAllText(fi.FullName, x)
+    
+    let BumpNuspecFile (fi : FileInfo) (operation : string) =
+        let op = operation |> parseOperation
+        match op with
+        | Some o -> ((fi.FullName |> File.ReadAllText |> BumpNuspecContents) o) |> fun x -> File.WriteAllText(fi.FullName, x)
+        | None   -> printfn "Operation is not valid"

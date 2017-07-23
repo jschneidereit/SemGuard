@@ -42,8 +42,8 @@ namespace SemGuard.Tests
       </package >
       ";
 
-            var result = b.BumpNuspecContents(choco, "minor");
-            var otherresult = b.BumpNuspecContents(nuget, "major");
+            var result = b.BumpNuspecContents(choco, b.UnionOperation.Minor);
+            var otherresult = b.BumpNuspecContents(nuget, b.UnionOperation.Major);
 
 
             Assert.IsTrue(result.Contains("3.1.0"));
@@ -77,18 +77,26 @@ namespace SemGuard.Tests
         }
 
         [TestMethod]
-        public void TestWildCards()
+        [TestCategory("unit")]
+        [ExpectedException(typeof(FormatException))]
+        public void TestWildCardsSemantic()
         {
-            var test_version = "1.0.*";
+            var v = new SemVer.SemanticVersion("1.0.*");
+        }
 
-            var semv = new SemVer.SemanticVersion(test_version);
+        [TestMethod]
+        [TestCategory("unit")]
+        [ExpectedException(typeof(FormatException))]
+        public void TestWildCardSystem()
+        {
+            var v = new System.Version("1.0.*");
         }
 
         [TestMethod]
         public void BumpNuspecContentsTest()
         {
             var thing = System.Text.Encoding.Default.GetString(Properties.Resources.nuget);
-            var actual = b.BumpNuspecContents(thing, "major");
+            var actual = b.BumpNuspecContents(thing, b.UnionOperation.Major);
         }
 
         [TestMethod]
@@ -96,44 +104,47 @@ namespace SemGuard.Tests
         {
             var original = "1.0.0";
             var expected = "1.0.1";
-            var actual = b.Bump(original, "patch").ToString();
+            var actual = b.Bump(original, b.UnionOperation.Patch).ToString();
             Assert.AreEqual(expected, actual, "Bump must properly increment patch value");
 
-            actual = b.Bump(original, "PatcH").ToString();
+            actual = b.Bump(original, b.UnionOperation.Patch).ToString();
             Assert.AreEqual(expected, actual, "Bump must ignore case");
         }
 
         [TestMethod]
+        public void TestParse()
+        {
+            Assert.AreEqual(b.UnionOperation.Patch, b.parseOperation("PaTcH"), "Function parseOperation must ignore case");
+            Assert.AreEqual(b.UnionOperation.Build, b.parseOperation("BuilD"), "Function parseOperation must ignore case");
+            Assert.AreEqual(b.UnionOperation.Minor, b.parseOperation("Minor"), "Function parseOperation must ignore case");
+            Assert.AreEqual(b.UnionOperation.Major, b.parseOperation("Major"), "Function parseOperation must ignore case");
+        }
+
+        [TestMethod]
+        [TestCategory("unit")]
         public void TestMinor()
         {
             var original = "1.0.0";
             var expected = "1.1.0";
-            var actual = b.Bump(original, "minor").ToString();
+            var actual = b.Bump(original, b.UnionOperation.Minor).ToString();
             Assert.AreEqual(expected, actual, "Bump must properly increment minor value");
-
-            actual = b.Bump(original, "MiNoR").ToString();
-            Assert.AreEqual(expected, actual, "Bump must ignore case");
         }
 
         [TestMethod]
+        [TestCategory("unit")]
         public void TestMajor()
         {
             var original = "1.0.0";
             var expected = "2.0.0";
-            var actual = b.Bump(original, "major").ToString();
+            var actual = b.Bump(original, b.UnionOperation.Major).ToString();
             Assert.AreEqual(expected, actual, "Bump must properly increment major value");
-
-            actual = b.Bump(original, "MAjOr").ToString();
-            Assert.AreEqual(expected, actual, "Bump must ignore case");
         }
 
         [TestMethod]
+        [TestCategory("unit")]
         public void TestInvalidOperator()
         {
-            var original = "1.0.0";
-            var expected = "1.0.0";
-            var actual = b.Bump(original, "notvalid").ToString();
-            Assert.AreEqual(expected, actual, "Invalid operators return the same version");
+            Assert.IsNull(b.parseOperation("invalid"), "Function parseOperation must return none type (null in C# land)");
         }
     }
 }
