@@ -53,6 +53,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SemBump\SemBump.fsproj">
+      <Project>{5aa40aaa-8dfe-44c4-863c-f3ab6e9a7295}</Project>
+      <Name>SemBump</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SemGuard.Lib\SemGuard.Lib.csproj">
       <Project>{764f563b-722a-48a3-9607-dd774ebd3549}</Project>
       <Name>SemGuard.Lib</Name>
