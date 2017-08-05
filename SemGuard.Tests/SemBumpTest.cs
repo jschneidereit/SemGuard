@@ -1,15 +1,12 @@
 ﻿using System;
 using b = SemBump.Bumper;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Xml.Linq;
-using System.Linq;
+using Xunit;
 
 namespace SemGuard.Tests
 {
-    [TestClass]
     public class SemBumpTest
     {
-        [TestMethod]
+        [Fact]
         public void BumpChocoTest()
         {
             var choco = @"<?xml version=""1.0"" encoding=""utf - 8""?>
@@ -46,15 +43,15 @@ namespace SemGuard.Tests
             var otherresult = b.BumpNuspecContents(nuget, b.UnionOperation.Major);
 
 
-            Assert.IsTrue(result.Contains("3.1.0"));
-            Assert.IsTrue(otherresult.Contains("2.0.0.0"));
+            Assert.True(result.Contains("3.1.0"));
+            Assert.True(otherresult.Contains("2.0.0.0"));
 
 
-            Assert.IsTrue(result.Contains("3.1.0<"), "Must maintain type of version");
-            Assert.IsTrue(otherresult.Contains("2.0.0.0<"), "Must maintain type of version");
+            Assert.True(result.Contains("3.1.0<"), "Must maintain type of version");
+            Assert.True(otherresult.Contains("2.0.0.0<"), "Must maintain type of version");
         }
 
-        [TestMethod]
+        [Fact]
         public void DetermineVersionTypeTest()
         {
             var test_version = "1.0.0-rc1";
@@ -76,75 +73,73 @@ namespace SemGuard.Tests
             }
         }
 
-        [TestMethod]
-        [TestCategory("unit")]
-        [ExpectedException(typeof(FormatException))]
+        [Fact]
+        [Trait("Category", "Unit")]
         public void TestWildCardsSemantic()
         {
-            var v = new SemVer.SemanticVersion("1.0.*");
+            Assert.Throws<FormatException>(() => new SemVer.SemanticVersion("1.0.*"));
         }
 
-        [TestMethod]
-        [TestCategory("unit")]
-        [ExpectedException(typeof(FormatException))]
+        [Fact]
+        [Trait("Category", "Unit")]
         public void TestWildCardSystem()
         {
-            var v = new System.Version("1.0.*");
+            Assert.Throws<FormatException>(() => new System.Version("1.0.*"));
         }
 
-        [TestMethod]
+        [Fact]
         public void BumpNuspecContentsTest()
         {
             var thing = System.Text.Encoding.Default.GetString(Properties.Resources.nuget);
             var actual = b.BumpNuspecContents(thing, b.UnionOperation.Major);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestPatch()
         {
             var original = "1.0.0";
             var expected = "1.0.1";
             var actual = b.Bump(original, b.UnionOperation.Patch).ToString();
-            Assert.AreEqual(expected, actual, "Bump must properly increment patch value");
+            Assert.Equal(expected, actual); //"Bump must properly increment patch value"
 
             actual = b.Bump(original, b.UnionOperation.Patch).ToString();
-            Assert.AreEqual(expected, actual, "Bump must ignore case");
+            Assert.Equal(expected, actual); //"Bump must ignore case"
         }
 
-        [TestMethod]
+        [Fact]
         public void TestParse()
         {
-            Assert.AreEqual(b.UnionOperation.Patch, b.parseOperation("PaTcH"), "Function parseOperation must ignore case");
-            Assert.AreEqual(b.UnionOperation.Build, b.parseOperation("BuilD"), "Function parseOperation must ignore case");
-            Assert.AreEqual(b.UnionOperation.Minor, b.parseOperation("Minor"), "Function parseOperation must ignore case");
-            Assert.AreEqual(b.UnionOperation.Major, b.parseOperation("Major"), "Function parseOperation must ignore case");
+            Assert.Equal(b.UnionOperation.Patch, b.parseOperation("PaTcH")); //Function parseOperation must ignore case
+            Assert.Equal(b.UnionOperation.Build, b.parseOperation("BuilD")); //Function parseOperation must ignore case
+            Assert.Equal(b.UnionOperation.Minor, b.parseOperation("Minor")); //Function parseOperation must ignore case
+            Assert.Equal(b.UnionOperation.Major, b.parseOperation("Major")); //Function parseOperation must ignore case
         }
 
-        [TestMethod]
-        [TestCategory("unit")]
+        [Fact]
+        [Trait("Category", "Unit")]
         public void TestMinor()
         {
             var original = "1.0.0";
             var expected = "1.1.0";
             var actual = b.Bump(original, b.UnionOperation.Minor).ToString();
-            Assert.AreEqual(expected, actual, "Bump must properly increment minor value");
+            Assert.Equal(expected, actual); //Bump must properly increment minor value
         }
 
-        [TestMethod]
-        [TestCategory("unit")]
+        [Fact]
+        [Trait("Category", "Unit")]
         public void TestMajor()
         {
             var original = "1.0.0";
             var expected = "2.0.0";
             var actual = b.Bump(original, b.UnionOperation.Major).ToString();
-            Assert.AreEqual(expected, actual, "Bump must properly increment major value");
+            Assert.Equal(expected, actual); //Bump must properly increment major value
         }
 
-        [TestMethod]
-        [TestCategory("unit")]
+        [Fact]
+        [Trait("Category", "Unit")]
         public void TestInvalidOperator()
         {
-            Assert.IsNull(b.parseOperation("invalid"), "Function parseOperation must return none type (null in C# land)");
+            Assert.Null(b.parseOperation("invalid")); //Function parseOperation must return none type (null in C# land)
         }
     }
 }

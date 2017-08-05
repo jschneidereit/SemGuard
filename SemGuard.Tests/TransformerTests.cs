@@ -1,146 +1,247 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using System.IO;
 using System.Collections.Generic;
 using System;
 using System.Linq;
 using SemGuard.Lib;
-using SemGuard.Tests.Properties;
+using Xunit;
 
 namespace SemGuard.Tests
 {
-    [TestClass()]
     public class TransformerTests
     {
         //TODO: point these to the embedded resources
-        private IEnumerable<(Topology, Compilation, Project)> Base { get; } = Transformer.LoadSolution(@"..\..\Dummy\BaseDummy\Dummy.sln").ToList();
-        private (Topology, Compilation, Project) Major { get; } = Transformer.LoadSolution(@"..\..\Dummy\MajorDummy\Dummy.sln").First();
-        private (Topology, Compilation, Project) Minor { get; } = Transformer.LoadSolution(@"..\..\Dummy\MinorDummy\Dummy.sln").First();
-        private (Topology, Compilation, Project) Patch { get; } = Transformer.LoadSolution(@"..\..\Dummy\PatchDummy\Dummy.sln").First();
+        private IEnumerable<(Topology, Compilation, Project)> Base(string temp) => Transformer.LoadSolution(Path.Combine(temp, @"BaseDummy\Dummy.sln")).ToList();
+        private (Topology, Compilation, Project) Major(string temp) => Transformer.LoadSolution(Path.Combine(temp, @"MajorDummy\Dummy.sln")).First();
+        private (Topology, Compilation, Project) Minor(string temp) => Transformer.LoadSolution(Path.Combine(temp, @"MinorDummy\Dummy.sln")).First();
+        private (Topology, Compilation, Project) Patch(string temp) => Transformer.LoadSolution(Path.Combine(temp, @"PatchDummy\Dummy.sln")).First();
+
+        private static string GetTemporaryDirectory()
+        {
+            var systemTemp = Environment.GetEnvironmentVariable("TEMP", EnvironmentVariableTarget.Machine);
+            var temp = Path.Combine(systemTemp, "semguard", Guid.NewGuid().ToString());
+            Directory.CreateDirectory(temp);
+            return temp;
+        }
+
+        private static string GetNewTempEnvironment()
+        {
+            var target = new DirectoryInfo(GetTemporaryDirectory());
+            var source = new DirectoryInfo(@"..\..\Dummy");
+
+            CopyTestFilesRec(source, target);
+
+            return target.FullName;
+        }
+
+        /// <summary>
+        /// Thanks stack overflow: https://stackoverflow.com/a/58779
+        /// </summary>
+        private static void CopyTestFilesRec(DirectoryInfo source, DirectoryInfo target)
+        {
+            foreach (var dir in source.GetDirectories())
+            {
+                CopyTestFilesRec(dir, target.CreateSubdirectory(dir.Name));
+            }
+
+            foreach (var file in source.GetFiles())
+            {
+                file.CopyTo(Path.Combine(target.FullName, file.Name));
+            }
+        }
 
         private static bool SetEquals<T>(List<T> left, List<T> right) where T : IComparable
         {
             return left.TrueForAll(obj => right.Contains(obj)) && right.TrueForAll(m => left.Contains(m));
         }
+        
+        public void Cleanup()
+        {
+            try
+            {
+                Directory.Delete(Path.Combine(Environment.GetEnvironmentVariable("TEMP", EnvironmentVariableTarget.Machine), "semguard"), true);
+            }
+            catch
+            {
+                //don't really care if this blows up, I tried :P
+            }
+        }
 
-        [TestMethod()]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void GetNewAssemblyVersionTest()
         {
-            var majorchange = Major.Item1.DetermineSemanticChange(Base.First().Item1);
-            var minorchange = Minor.Item1.DetermineSemanticChange(Base.First().Item1);
-            var patchchange = Patch.Item1.DetermineSemanticChange(Base.First().Item1);
+            var temp = GetNewTempEnvironment();
 
-            Assert.AreEqual(new Version("2.0.0.0"), Major.Item1.GetNewAssemblyVersion(majorchange));
-            Assert.AreEqual(new Version("1.1.0.0"), Minor.Item1.GetNewAssemblyVersion(minorchange));
-            Assert.AreEqual(new Version("1.0.1.0"), Patch.Item1.GetNewAssemblyVersion(patchchange));
+            var minor = Minor(temp);
+            var major = Major(temp);
+            var patch = Patch(temp);
+            var b = Base(temp);
+
+            var majorchange = major.Item1.DetermineSemanticChange(b.First().Item1);
+            var minorchange = minor.Item1.DetermineSemanticChange(b.First().Item1);
+            var patchchange = patch.Item1.DetermineSemanticChange(b.First().Item1);
+
+            Assert.Equal(new Version("2.0.0.0"), major.Item1.GetNewAssemblyVersion(majorchange));
+            Assert.Equal(new Version("1.1.0.0"), minor.Item1.GetNewAssemblyVersion(minorchange));
+            Assert.Equal(new Version("1.0.1.0"), patch.Item1.GetNewAssemblyVersion(patchchange));
+
+            Directory.Delete(temp, true);
         }
 
-        [TestMethod()]
+        [Fact]
         public void GetNewAssemblyVersionDefaultTest()
         {
-            Assert.AreEqual(SemanticChange.Patch, default(SemanticChange));
+            var actual = default(SemanticChange);
+            Assert.Equal(SemanticChange.Patch, actual);
         }
 
-        [TestMethod()]
+        [Fact]
         public void DefaultVersionTest()
         {
-            Assert.AreEqual(new Version("1.0.0.0"), Transformer.DefaultVersion());
+            Assert.Equal(new Version("1.0.0.0"), Transformer.DefaultVersion());
         }
 
-        [TestMethod()]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void GetCurrentVersionTest()
         {
-            var compilation = Base.First().Item2;
+            var temp = GetNewTempEnvironment();
+
+            var compilation = Base(temp).First().Item2;
             var actual = compilation.GetCurrentVersion();
-            Assert.AreEqual(new Version("1.0.0.0"), actual);
+            Assert.Equal(new Version("1.0.0.0"), actual);
+
+            Directory.Delete(temp, true);
         }
 
-        [TestMethod()]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void GetAssemblyNameTest()
         {
-            var compilation = Base.First().Item2;
+            var temp = GetNewTempEnvironment();
+
+            var compilation = Base(temp).First().Item2;
             var actual = compilation.GetAssemblyName();
-            Assert.AreEqual("Dummy", actual);
+            Assert.Equal("Dummy", actual);
+
+            Directory.Delete(temp, true);
         }
 
-        [TestMethod()]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void GetAssemblyFilePathTest()
         {
-            var expected = @"C:\Repos\SemGuard\SemGuard.Tests\Dummy\BaseDummy\Dummy.csproj";
-            var actual = Base.First().Item3.GetAssemblyFilePath();
-            Assert.AreEqual(expected, actual);
+            var temp = GetNewTempEnvironment();
+
+            var expected = Path.Combine(temp, @"\BaseDummy\Dummy.csproj");
+            var actual = Base(temp).First().Item3.GetAssemblyFilePath();
+            Assert.Equal(expected, actual);
+
+            Directory.Delete(temp, true);
         }
 
-        [TestMethod()]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void GetTopoFilePathTest()
         {
-            var expected = @"C:\Repos\SemGuard\SemGuard.Tests\Dummy\BaseDummy\Dummy.csproj.topo";
-            var actual = Base.First().Item1.GetTopoFilePath();
-            Assert.AreEqual(expected, actual);
+            var temp = GetNewTempEnvironment();
+
+            var expected = Path.Combine(temp, @"BaseDummy\Dummy.csproj.topo");
+            var actual = Base(temp).First().Item1.GetTopoFilePath();
+            Assert.Equal(expected, actual);
+
+            Directory.Delete(temp, true);
         }
 
-        [TestMethod()]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void TopoFileExistsTest()
         {
-            if (!File.Exists(@"C:\Repos\SemGuard\SemGuard.Tests\Dummy\BaseDummy\Dummy.csproj.topo"))
-            {
-                Base.First().Item1.SaveToFile();
-            }
+            var temp = GetNewTempEnvironment();
+            var topo = Path.Combine(temp, @"BaseDummy\Dummy.csproj.topo");
+            var b = Base(temp);
 
-            Assert.IsTrue(Transformer.TopoFileExists(Base.First().Item1.GetTopoFilePath()));
-            Assert.IsFalse(Transformer.TopoFileExists(@"C:\Repos\SemGuard\SemGuard.Tests\Dummy\BaseDummy\Dummy.csproj"));
+            //if (!File.Exists(topo))
+            //{
+            //    b.First().Item1.SaveToFile();
+            //}
+
+            Assert.True(Transformer.TopoFileExists(b.First().Item1.GetTopoFilePath()));
+            Assert.False(Transformer.TopoFileExists(Path.Combine(temp, @"BaseDummy\Dummy.csproj")));
+
+            Directory.Delete(temp, true);
         }
 
-        [TestMethod()]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void BuildTopologyAndLoadFromFileTest()
         {
-            var path = @"C:\Repos\SemGuard\SemGuard.Tests\Dummy\BaseDummy\Dummy.csproj.topo";
+            var temp = GetNewTempEnvironment();
+            var path = Path.Combine(temp, @"BaseDummy\Dummy.csproj.topo");
+            var b = Base(temp);
             if (!File.Exists(path))
             {
-                Base.First().Item1.SaveToFile();
+                b.First().Item1.SaveToFile();
             }
 
             var fromfile = Transformer.LoadFromFile(path);
-            var fromassembly = Transformer.BuildTopology(Base.First().Item2, Base.First().Item3);
-            Assert.AreEqual(fromassembly.AssemblyName, fromfile.AssemblyName);
-            Assert.AreEqual(fromassembly.AssemblyPath, fromfile.AssemblyPath);
-            Assert.IsTrue(SetEquals(fromassembly.AssemblyReferences, fromfile.AssemblyReferences));
-            Assert.IsTrue(SetEquals(fromassembly.PublicApi, fromfile.PublicApi));
-            Assert.AreEqual(fromassembly.Version, fromfile.Version);
+            var fromassembly = Transformer.BuildTopology(b.First().Item2, b.First().Item3);
+            Assert.Equal(fromassembly.AssemblyName, fromfile.AssemblyName);
+            Assert.Equal(fromassembly.AssemblyPath, fromfile.AssemblyPath);
+            Assert.True(SetEquals(fromassembly.AssemblyReferences, fromfile.AssemblyReferences));
+            Assert.True(SetEquals(fromassembly.PublicApi, fromfile.PublicApi));
+            Assert.Equal(fromassembly.Version, fromfile.Version);
+
+            Directory.Delete(temp, true);
         }
 
-        [TestMethod()]
-        [TestCategory("Integration")]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void BuildTopologyTestNullCompilation()
         {
-            Transformer.BuildTopology(null, Base.First().Item3);
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var temp = GetNewTempEnvironment();
+                Transformer.BuildTopology(null, Base(temp).First().Item3);
+            });
+
+            Cleanup();
         }
 
-        [TestMethod()]
-        [TestCategory("Integration")]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void BuildTopologyTestNullProject()
         {
-            Transformer.BuildTopology(Base.First().Item2, null);
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var temp = GetNewTempEnvironment();
+                Transformer.BuildTopology(Base(temp).First().Item2, null);
+            });
+
+            Cleanup();
         }
 
-        [TestMethod()]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void SaveToFileTest()
         {
-            var path = @"C:\Repos\SemGuard\SemGuard.Tests\Dummy\BaseDummy\Dummy.csproj.topo";
+            var temp = GetNewTempEnvironment();
+            var path = Path.Combine(temp, @"BaseDummy\Dummy.csproj.topo");
+            var b = Base(temp);
             if (File.Exists(path))
             {
                 File.Delete(path);
             }
 
-            Base.First().Item1.SaveToFile();
-            Assert.IsTrue(Transformer.TopoFileExists(Base.First().Item1.GetTopoFilePath()));
+            b.First().Item1.SaveToFile();
+            Assert.True(Transformer.TopoFileExists(b.First().Item1.GetTopoFilePath()));
+
+            Directory.Delete(temp);
         }
 
-        [TestMethod()]
+        [Fact]
+        [Trait("Category", "Unit")]
         public void AdditionsTest()
         {
             var old = new List<int>() { 1, 2, 3 };
@@ -148,35 +249,39 @@ namespace SemGuard.Tests
             var newboth = new List<int>() { 1, 2, 4, 5 };
             var newadd = new List<int>() { 1, 2, 3, 4 };
 
-            Assert.IsFalse(Transformer.Additions(newrem, old));
-            Assert.IsTrue(Transformer.Additions(newboth, old));
-            Assert.IsTrue(Transformer.Additions(newadd, old));
+            Assert.False(Transformer.Additions(newrem, old));
+            Assert.True(Transformer.Additions(newboth, old));
+            Assert.True(Transformer.Additions(newadd, old));
         }
 
-        [TestMethod()]
-        [TestCategory("Unit")]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
+        [Trait("Category", "Unit")]
         public void AdditionNullLists()
         {
-            List<int> x = null;
-            List<int> y = null;
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                List<int> x = null;
+                List<int> y = null;
 
-            Transformer.Additions(x, y);
+                Transformer.Additions(x, y);
+            });
         }
 
-        [TestMethod()]
-        [TestCategory("Unit")]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
+        [Trait("Category", "Unit")]
         public void RemovalNullLists()
         {
-            List<int> x = null;
-            List<int> y = null;
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                List<int> x = null;
+                List<int> y = null;
 
-            Transformer.Removals(x, y);
+                Transformer.Removals(x, y);
+            });
         }
 
-        [TestMethod()]
-        [TestCategory("Unit")]
+        [Fact]
+        [Trait("Category", "Unit")]
         public void RemovalsTest()
         {
             var old = new List<int>() { 1, 2, 3 };
@@ -184,34 +289,47 @@ namespace SemGuard.Tests
             var newboth = new List<int>() { 1, 2, 4, 5 };
             var newadd = new List<int>() { 1, 2, 3, 4 };
 
-            Assert.IsTrue(Transformer.Removals(newrem, old));
-            Assert.IsTrue(Transformer.Removals(newboth, old));
-            Assert.IsFalse(Transformer.Removals(newadd, old));
+            Assert.True(Transformer.Removals(newrem, old));
+            Assert.True(Transformer.Removals(newboth, old));
+            Assert.False(Transformer.Removals(newadd, old));
         }
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void DetermineSemanticChangeTest()
         {
+            var temp = GetNewTempEnvironment();
+
+            var minor = Minor(temp);
+            var major = Major(temp);
+            var patch = Patch(temp);
+            var b = Base(temp);
+
             //TODO: figure this out later http://stackoverflow.com/a/65062/1895962
-            Assert.AreEqual(SemanticChange.Minor, Minor.Item1.DetermineSemanticChange(Base.First().Item1));
-            Assert.AreEqual(SemanticChange.Major, Major.Item1.DetermineSemanticChange(Base.First().Item1));
-            Assert.AreEqual(SemanticChange.Patch, Patch.Item1.DetermineSemanticChange(Base.First().Item1));
+            Assert.Equal(SemanticChange.Minor, minor.Item1.DetermineSemanticChange(b.First().Item1));
+            Assert.Equal(SemanticChange.Major, major.Item1.DetermineSemanticChange(b.First().Item1));
+            Assert.Equal(SemanticChange.Patch, patch.Item1.DetermineSemanticChange(b.First().Item1));
+
+            Directory.Delete(temp);
         }
 
-        [TestMethod()]
-        [TestCategory("Unit")]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Fact]
+        [Trait("Category", "Unit")]
         public void GetAssemblyReferencesNullTest()
         {
-            Compilation c = null;
-            c.GetAssemblyReferences();
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                Compilation c = null;
+                c.GetAssemblyReferences();
+            });
         }
 
-        [TestMethod()]
+        [Fact]
         public void SetAssemblyVersionCreatesTopoTest()
         {
-            var path = Base.First().Item1.GetTopoFilePath();
+            var temp = GetNewTempEnvironment();
+            var b = Base(temp);
+            var path = b.First().Item1.GetTopoFilePath();
             if (File.Exists(path))
             {
                 File.Delete(path);
@@ -219,7 +337,7 @@ namespace SemGuard.Tests
 
             try
             {
-                Base.First().Item2.UpdateAssemblyVersion(Base.First().Item1, SemanticChange.Patch);
+                b.First().Item2.UpdateAssemblyVersion(b.First().Item1, SemanticChange.Patch);
             }
             catch (NotImplementedException)
             {
@@ -231,13 +349,14 @@ namespace SemGuard.Tests
             }
 
             //TODO: determine if there is a way to tell git to ignore changes to the topo and csproj test files
-            Assert.IsTrue(File.Exists(path));
+            Assert.True(File.Exists(path));
         }
 
-        [TestMethod()]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public void GetAssemblyReferenceTest()
         {
+            var temp = GetNewTempEnvironment();
             var expected = new List<(string, Version)> {
                 ("Microsoft.CSharp", new Version("4.0.0.0")),
                 ("mscorlib", new Version("4.0.0.0")),
@@ -248,8 +367,8 @@ namespace SemGuard.Tests
                 ("System.Net.Http",new Version("4.0.0.0")),
                 ("System.Xml",new Version("4.0.0.0")),
                 ("System.Xml.Linq",new Version("4.0.0.0")) };
-            var references = Base.First().Item2.GetAssemblyReferences();
-            Assert.IsTrue(SetEquals(expected, references));
+            var references = Base(temp).First().Item2.GetAssemblyReferences();
+            Assert.True(SetEquals(expected, references));
         }
     }
 }
