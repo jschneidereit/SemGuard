@@ -14,8 +14,8 @@ namespace SemGuard
             {
                 return;
             }
-            
-            throw new InvalidProgramException($"Option {name} is invalid. It is necessary for this operation.");            
+
+            throw new InvalidProgramException($"Option {name} is invalid. It is necessary for this operation.");
         }
 
         internal static int Main(string[] args)
@@ -28,7 +28,6 @@ namespace SemGuard
 
             var solution = app.Option("-s |--solution <solution>", "The path of the solution to be loaded.", CommandOptionType.SingleValue, false);
             var assembly = app.Option("-a |--assembly <assembly>", "The target assembly to examine.", CommandOptionType.SingleValue, false);
-          
 
             Orchestrator orchestrator;
             try
@@ -60,7 +59,7 @@ namespace SemGuard
 
                 c.OnExecute(() =>
                 {
-                    
+
 
                     return 0;
                 });
@@ -69,19 +68,19 @@ namespace SemGuard
             app.Command("bump", c =>
             {
                 c.Description = "Compares previous version's metadata against the current compilation and sets a new version.";
-                                
+
                 var major = c.Option("--major", "Increment the major version.", CommandOptionType.NoValue);
                 var minor = c.Option("--minor", "Increment the minor version.", CommandOptionType.NoValue);
                 var patch = c.Option("--patch", "Increment the patch version.", CommandOptionType.NoValue);
                 var build = c.Option("--build", "Increment the build version.", CommandOptionType.NoValue);
 
-                var nuspec = c.Option("--nuspec", 
+                var nuspec = c.Option("--nuspec",
 $@"Optional target nuspec file (can be chocolatey or nuget nuspec file). {Environment.NewLine}
 This currently is in 'bump' because there's no reason to analyze a nuspec file (in diff) that I can think of.{Environment.NewLine}
 In fact, i'd rather not use a nuspec file for .NET projects, only for choco packages.{ Environment.NewLine}
-You can get everything you need from 'nuget pack myassembly.csproj'", 
+You can get everything you need from 'nuget pack myassembly.csproj'",
                     CommandOptionType.SingleValue);
-                
+
                 c.OnExecute(() =>
                 {
                     FileInfo fi = null;
@@ -91,7 +90,7 @@ You can get everything you need from 'nuget pack myassembly.csproj'",
                     }
 
                     var operation = string.Empty;
-                                        
+
                     if (major.HasValue())
                     {
                         operation = "major";
@@ -153,5 +152,5 @@ Eventually, if a case can be made for it, I'd like to see this use 'diff' to det
 
             return 0;
         }
-}
+    }
 }
