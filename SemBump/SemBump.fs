@@ -75,7 +75,6 @@ module Bumper =
         | Minor -> (v.Major, v.Minor + 1, 0, 0)
         | Patch -> (v.Major, v.Minor, v.Build, 0)
         | Build -> (v.Major, v.Minor, v.Build, v.Revision + 1)
-        | _       -> (v.Major, v.Minor, v.Build, v.Revision)
         |> fun (x, y, z, w) -> sprintf "%i.%i.%i.%i" x y z w
 
     let Bump (v : string) (o : UnionOperation) =

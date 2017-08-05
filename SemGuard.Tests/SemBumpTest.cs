@@ -1,6 +1,7 @@
 ﻿using System;
-using b = SemBump.Bumper;
 using Xunit;
+using b = SemBump.Bumper;
+
 
 namespace SemGuard.Tests
 {

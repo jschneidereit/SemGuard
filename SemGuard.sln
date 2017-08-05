@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemGuard", "SemGuard\SemGuard.csproj", "{A1B07649-D615-4CBB-8CF6-12819ACC8044}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemGuard.Lib", "SemGuard.Lib\SemGuard.Lib.csproj", "{764F563B-722A-48A3-9607-DD774EBD3549}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SemBump", "SemBump\SemBump.fsproj", "{5AA40AAA-8DFE-44C4-863C-F3AB6E9A7295}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemGuard.Tests", "SemGuard.Tests\SemGuard.Tests.csproj", "{E1A0985C-AF75-4FE8-959D-67893E416D73}"
@@ -21,10 +19,6 @@ Global
 		{A1B07649-D615-4CBB-8CF6-12819ACC8044}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1B07649-D615-4CBB-8CF6-12819ACC8044}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1B07649-D615-4CBB-8CF6-12819ACC8044}.Release|Any CPU.Build.0 = Release|Any CPU
-		{764F563B-722A-48A3-9607-DD774EBD3549}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{764F563B-722A-48A3-9607-DD774EBD3549}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{764F563B-722A-48A3-9607-DD774EBD3549}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{764F563B-722A-48A3-9607-DD774EBD3549}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5AA40AAA-8DFE-44C4-863C-F3AB6E9A7295}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5AA40AAA-8DFE-44C4-863C-F3AB6E9A7295}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AA40AAA-8DFE-44C4-863C-F3AB6E9A7295}.Release|Any CPU.ActiveCfg = Release|Any CPU

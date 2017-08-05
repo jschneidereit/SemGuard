@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis.MSBuild;
 
-namespace SemGuard.Lib
+namespace SemGuard
 {
     public static class Transformer
     {

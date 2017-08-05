@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SemGuard.Lib
+namespace SemGuard
 {
     /// <summary>
     /// Immutable plain-ol'-data that contains information about an assembly

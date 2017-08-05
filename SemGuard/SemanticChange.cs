@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SemGuard.Lib
+namespace SemGuard
 {
     /// <summary>
     /// We are attempting to analyze a C# project and assign it a verion number based on http://semver.org/.

@@ -42,12 +42,6 @@
     <Reference Include="Esent.Interop, Version=1.9.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\ManagedEsent.1.9.4\lib\net40\Esent.Interop.dll</HintPath>
     </Reference>
-    <Reference Include="FParsec, Version=1.0.0.0, Culture=neutral, PublicKeyToken=40ccfc0a09edbb5d, processorArchitecture=MSIL">
-      <HintPath>..\packages\FParsec.1.0.1\lib\net40-client\FParsec.dll</HintPath>
-    </Reference>
-    <Reference Include="FParsecCS, Version=1.0.0.0, Culture=neutral, PublicKeyToken=40ccfc0a09edbb5d, processorArchitecture=MSIL">
-      <HintPath>..\packages\FParsec.1.0.1\lib\net40-client\FParsecCS.dll</HintPath>
-    </Reference>
     <Reference Include="FSharp.Core, Version=4.4.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\FSharp.Core.4.1.17\lib\net45\FSharp.Core.dll</HintPath>
       <Private>True</Private>
@@ -245,16 +239,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SemBump\SemBump.fsproj">
-      <Project>{5aa40aaa-8dfe-44c4-863c-f3ab6e9a7295}</Project>
-      <Name>SemBump</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SemGuard.Lib\SemGuard.Lib.csproj">
-      <Project>{764F563B-722A-48A3-9607-DD774EBD3549}</Project>
-      <Name>SemGuard.Lib</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Dummy\BaseDummy\Dummy.csproj" />
     <EmbeddedResource Include="Dummy\BaseDummy\Dummy.sln" />
     <EmbeddedResource Include="Dummy\DummyTwo\DummyTwo.csproj" />
@@ -268,6 +252,16 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SemBump\SemBump.fsproj">
+      <Project>{5aa40aaa-8dfe-44c4-863c-f3ab6e9a7295}</Project>
+      <Name>SemBump</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SemGuard\SemGuard.csproj">
+      <Project>{a1b07649-d615-4cbb-8cf6-12819acc8044}</Project>
+      <Name>SemGuard</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

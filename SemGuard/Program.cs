@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Extensions.CommandLineUtils;
-using SemGuard.Lib;
 using b = SemBump.Bumper;
 
 namespace SemGuard

@@ -46,8 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Orchestrator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SemanticChange.cs" />
+    <Compile Include="Topology.cs" />
+    <Compile Include="Transformer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -57,14 +61,16 @@
       <Project>{5aa40aaa-8dfe-44c4-863c-f3ab6e9a7295}</Project>
       <Name>SemBump</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SemGuard.Lib\SemGuard.Lib.csproj">
-      <Project>{764f563b-722a-48a3-9607-dd774ebd3549}</Project>
-      <Name>SemGuard.Lib</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis">
+      <Version>1.3.2</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.CommandLineUtils">
       <Version>1.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="System.ValueTuple">
       <Version>4.3.1</Version>

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 
-namespace SemGuard.Lib
+namespace SemGuard
 {
     public class Orchestrator
     {

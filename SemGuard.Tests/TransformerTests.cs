@@ -3,8 +3,8 @@ using System.IO;
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using SemGuard.Lib;
 using Xunit;
+using SemGuard;
 
 namespace SemGuard.Tests
 {
