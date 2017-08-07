@@ -198,34 +198,20 @@ namespace SemGuard.Tests
 
         [Fact]
         [Trait("Category", "Integration")]
-        public void BuildTopologyTestNullCompilation()
-        {
-            Assert.Throws<ArgumentNullException>(() =>
-            {
-                var temp = GetNewTempEnvironment();
-                Transformer.BuildTopology(null, Base(temp).First().Item3);
-            });
-
-            Cleanup();
-        }
-
-        [Fact]
-        [Trait("Category", "Integration")]
         public void BuildTopologyTestNullProject()
         {
-            Assert.Throws<ArgumentNullException>(() =>
-            {
-                var temp = GetNewTempEnvironment();
-                Transformer.BuildTopology(Base(temp).First().Item2, null);
-            });
+            var temp = GetNewTempEnvironment();
 
-            Cleanup();
+            Assert.Throws<ArgumentNullException>(() => Transformer.BuildTopology(null, Base(temp).First().Item3));
+            Assert.Throws<ArgumentNullException>(() => Transformer.BuildTopology(Base(temp).First().Item2, null));
+
+            Directory.Delete(temp, true);
         }
 
         [Fact]
         [Trait("Category", "Integration")]
         public void SaveToFileTest()
-        {
+          {
             var temp = GetNewTempEnvironment();
             var path = Path.Combine(temp, @"BaseDummy\Dummy.csproj.topo");
             var b = Base(temp);
@@ -237,7 +223,7 @@ namespace SemGuard.Tests
             b.First().Item1.SaveToFile();
             Assert.True(Transformer.TopoFileExists(b.First().Item1.GetTopoFilePath()));
 
-            Directory.Delete(temp);
+            Directory.Delete(temp, true);
         }
 
         [Fact]
