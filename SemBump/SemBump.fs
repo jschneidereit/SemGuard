@@ -87,9 +87,12 @@ module Bumper =
         let doc = XDocument.Parse(contents)
         
         doc.Descendants().Attributes() |> Seq.filter (fun a -> a.IsNamespaceDeclaration) |> Seq.map (fun a -> a.Remove()) |> ignore
-        let version = doc.Descendants() |> Seq.filter (fun d -> d.Name.LocalName.ToLower() = "version") |> Seq.head
+        let versionNode =
+            (doc.Descendants())
+                |> Seq.filter (fun d -> d.Name.LocalName.ToLower() = "version")
+                |> Seq.head
 
-        (Bump version.Value o).ToString() |> version.SetValue
+        (Bump (versionNode.Value.Trim()) o).ToString() |> versionNode.SetValue
         
         doc.ToString()
             
