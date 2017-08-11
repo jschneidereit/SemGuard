@@ -41,14 +41,11 @@ namespace SemGuard.Tests
       ";
 
             var result = b.BumpNuspecContents(choco, b.UnionOperation.Minor);
-            var otherresult = b.BumpNuspecContents(nuget, b.UnionOperation.Major);
-
-
             Assert.True(result.Contains("3.1.0"));
-            Assert.True(otherresult.Contains("2.0.0.0"));
-
-
             Assert.True(result.Contains("3.1.0<"), "Must maintain type of version");
+
+            var otherresult = b.BumpNuspecContents(nuget, b.UnionOperation.Major);
+            Assert.True(otherresult.Contains("2.0.0.0"));
             Assert.True(otherresult.Contains("2.0.0.0<"), "Must maintain type of version");
         }
 
@@ -58,7 +55,7 @@ namespace SemGuard.Tests
             var test_version = "1.0.0-rc1";
 
             try
-            {   
+            {
                 var semv = new SemVer.SemanticVersion(test_version);
             }
             catch (Exception)

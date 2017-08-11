@@ -54,7 +54,7 @@ namespace SemGuard.Tests
         {
             return left.TrueForAll(obj => right.Contains(obj)) && right.TrueForAll(m => left.Contains(m));
         }
-        
+
         public void Cleanup()
         {
             try
@@ -134,7 +134,7 @@ namespace SemGuard.Tests
         {
             var temp = GetNewTempEnvironment();
 
-            var expected = Path.Combine(temp, @"\BaseDummy\Dummy.csproj");
+            var expected = Path.Combine(temp, @"BaseDummy\Dummy.csproj");
             var actual = Base(temp).First().Item3.GetAssemblyFilePath();
             Assert.Equal(expected, actual);
 
@@ -188,7 +188,6 @@ namespace SemGuard.Tests
             var fromfile = Transformer.LoadFromFile(path);
             var fromassembly = Transformer.BuildTopology(b.First().Item2, b.First().Item3);
             Assert.Equal(fromassembly.AssemblyName, fromfile.AssemblyName);
-            Assert.Equal(fromassembly.AssemblyPath, fromfile.AssemblyPath);
             Assert.True(SetEquals(fromassembly.AssemblyReferences, fromfile.AssemblyReferences));
             Assert.True(SetEquals(fromassembly.PublicApi, fromfile.PublicApi));
             Assert.Equal(fromassembly.Version, fromfile.Version);
@@ -211,7 +210,7 @@ namespace SemGuard.Tests
         [Fact]
         [Trait("Category", "Integration")]
         public void SaveToFileTest()
-          {
+        {
             var temp = GetNewTempEnvironment();
             var path = Path.Combine(temp, @"BaseDummy\Dummy.csproj.topo");
             var b = Base(temp);
@@ -296,7 +295,7 @@ namespace SemGuard.Tests
             Assert.Equal(SemanticChange.Major, major.Item1.DetermineSemanticChange(b.First().Item1));
             Assert.Equal(SemanticChange.Patch, patch.Item1.DetermineSemanticChange(b.First().Item1));
 
-            Directory.Delete(temp);
+            Directory.Delete(temp, true);
         }
 
         [Fact]
